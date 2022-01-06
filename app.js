@@ -30,25 +30,25 @@ app.get('/api/teams', function (req, res) {
   res.json(teamFile);
 })
 
-app.get('/api/teams/:teamID', function (req, res) {
+app.get('/api/teams/:teamID', async function(req, res) {
+  scraper.getPlayers(req, res);
+  //async function getList() {
+    
 
-  async function getList() {
-    await scraper.getPlayers(req, res);
+    //res.sendFile('players.json');
 
-    res.sendFile('players.json');
+    let playersFile = fs.readFileSync('./players.json')
+    //let players =  JSON.parse(playersFile)
 
-    let playersFile = await fs.readFileSync('./players.json')
-    let players = await JSON.parse(playersFile)
-
-    return players;
+    res.json(playersFile)
 
     //console.log(players)
     //res.json(players);
-  }
+  
 
-  let list = getList();
-  console.log(list);
-  res.json(list);
+  //let list = getList();
+  console.log(playersFile);
+  //res.json(list);
   //getList();
 
 

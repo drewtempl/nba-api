@@ -103,9 +103,12 @@ let getPlayers = function(req, res, next)  {
                         
 
                         console.log(firstName, lastName);
+
                     }
 
                 });
+
+                //res.json(players)
 
 
             })
@@ -114,7 +117,7 @@ let getPlayers = function(req, res, next)  {
         //next()
     })
 
-    
+    //return
 }
 
 exports.getTeams = getTeams;
