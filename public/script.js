@@ -3,7 +3,7 @@ const container = document.querySelector('.container');
 async function getTeams() {
     const response = await fetch('http://localhost:3000/api/teams', {mode: 'cors'});
     
-    //console.log(response)
+    console.log(response)
     const teamsData = await response.json();
     
 
@@ -39,7 +39,7 @@ async function requestTeam(teamAbbrev) {
     
     const response = await fetch(`http://localhost:3000/api/teams/${teamAbbrev}`, {mode: 'cors'});
     
-    //console.log(response)
+    console.log(response)
     const playersData = await response.json();
     console.log(playersData)
 }
