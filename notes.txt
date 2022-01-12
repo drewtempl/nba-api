@@ -1,0 +1,3 @@
+scrape player lists during initialization
+
+fetch calls retrieve from DB
