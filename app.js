@@ -13,6 +13,9 @@ const port = 3000;
 app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(scraper.getTeams);
+//app.use(scraper.getPlayers);
+
+console.log(scraper.playerModel.find())
 
 let allowCrossDomain = function (req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
@@ -27,35 +30,57 @@ app.get('/', function (req, res) {
 })
 
 app.get('/api/teams', function (req, res) {
+  
   res.json(teamFile);
 })
 
-app.get('/api/teams/:teamID', async function(req, res) {
-  scraper.getPlayers(req, res);
-  //async function getList() {
-    
+app.get('/api/teams/:teamID', function (req, res) {
+  scraper.getPlayers(req, res, function(err, players) {
+    if (err) {
+      throw err;
+    } 
+    console.log(players);
+    res.json(players);
+  })
 
-    //res.sendFile('players.json');
-
-    let playersFile = fs.readFileSync('./players.json')
-    //let players =  JSON.parse(playersFile)
-
-    res.json(playersFile)
-
-    //console.log(players)
-    //res.json(players);
+  // let playerData = await scraper.getPlayers(req, res);
+  // console.log(playerData + 'playerData')
+  // let file = fs.readFileSync('./players.json', 'utf-8')
+  //await fetch('players.json');
+  // try {
+  //   file = 
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  //console.log(file)
   
-
-  //let list = getList();
-  console.log(playersFile);
-  //res.json(list);
-  //getList();
-
-
-
-
-  //console.log('File data:', jsonString) 
+  //res.json(req.params.file)
+  //next();
 });
+// //async function getList() {
+
+
+//res.sendFile('players.json');
+
+
+//let players =  JSON.parse(playersFile)
+
+
+
+//console.log(players)
+//res.json(players);
+
+
+//let list = getList();
+//console.log(playersFile);
+//res.json(list);
+//getList();
+
+
+
+
+//console.log('File data:', jsonString) 
+
 
 
 
