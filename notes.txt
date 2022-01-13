@@ -1,3 +1,12 @@
 scrape player lists during initialization
 
 fetch calls retrieve from DB
+
+
+mongoDB commands 
+
+start 
+sudo systemctl start mongod
+
+status
+sudo systemctl status mongod
