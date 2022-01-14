@@ -12,20 +12,19 @@ const port = 3000;
 
 const db = require('./config/keys').mongoURI;
 
-mongoose
-  .connect(db)
-  .then(() => console.log('MongoDB Connected...'))
-  .catch(err => console.log(err))
+// mongoose
+//   .connect(db)
+//   .then(() => console.log('MongoDB Connected...'))
+//   .catch(err => console.log(err))
 
-const team1 = new Team({
-  name: "Chicago Bulls",
-  abbre: "chi",
-  logo: "URL HERE"
-})
+// const team1 = new Team({
+//   name: "Chicago Bulls",
+//   abbre: "chi",
+//   logo: "URL HERE"
+// })
 
-team1.save()
-
-app.use(scraper.getTeams(mongoose));
+// team1.save()
+app.use(scraper, () => console.log("Teams found"));
 
 app.get('/test', function(req, res) {
   Team.find(team1).then(console.log(team1.name))
