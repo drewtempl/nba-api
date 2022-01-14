@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 //Create Schema
 const TeamSchema = new mongoose.Schema({
     name: String,
-    abbrev: String,
+    abvr: String,
     logo: String
 })
 

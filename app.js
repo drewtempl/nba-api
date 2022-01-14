@@ -10,7 +10,7 @@ const app = express();
 const router = express.Router();
 const port = 3000;
 
-const db = require('./config/keys').mongoURI;
+//const db = require('./config/keys').mongoURI;
 
 // mongoose
 //   .connect(db)
@@ -24,7 +24,7 @@ const db = require('./config/keys').mongoURI;
 // })
 
 // team1.save()
-app.use(scraper, () => console.log("Teams found"));
+app.use(scraper, teams => console.log(teams))
 
 app.get('/test', function(req, res) {
   Team.find(team1).then(console.log(team1.name))
