@@ -1,41 +1,19 @@
 const cheerio = require('cheerio');
 const request = require('request');
-const mongoose = require('mongoose');
-
-async function connectDB(callback) {
-    try {
-        await mongoose.connect('mongodb://127.0.0.1:27017');
-        
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-connectDB(logger);
-
-function logger() {
-    console.log("hello");
-}
-
-
+const Team = require('./models/teams.js');
 
 const playerSchema = new mongoose.Schema({
     first_name: String,
     last_name: String,
 })
 
-const teamSchema = new mongoose.Schema({
-    name: String,
-    abbrev: String,
-    logo: String
-})
+
 
 function getTeams() {
 
-    request('https://www.espn.com/nba/teams', async function (error, response, html) {
+    request('https://www.espn.com/nba/teams', function (error, response, html) {
         if (!error && response.statusCode == 200) {
             const $ = cheerio.load(html);
-            const teams = [];
 
             $('.mt4 .ContentList__Item').each((i, el) => {
                 let name = $(el).find('h2').text();
@@ -46,13 +24,28 @@ function getTeams() {
 
                 let logo = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/${abbrev}.png`;
 
-                teams.push({ team: `${name}`, abbrev: `${abbrev}`, logo: `${logo}` });
+                let team = new Team({
+                    team: `${name}`,
+                    abbrev: `${abbrev}`,
+                    logo: `${logo}`
+                });
+                
+                console.log(team.name)
+
+                team.save();
             });
         }
     });
 }
 
+exports.init = init;
+exports.getTeams = getTeams;
+
+
+
 
 async function init() {
-     
+    getTeams();     
 }
+
+
