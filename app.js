@@ -24,7 +24,7 @@ const port = 3000;
 // })
 
 // team1.save()
-app.use(scraper, teams => console.log(teams))
+app.use(scraper)
 
 app.get('/test', function(req, res) {
   Team.find(team1).then(console.log(team1.name))

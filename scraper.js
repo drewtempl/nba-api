@@ -35,22 +35,22 @@ const getTeams = async function () {
                     let array = abbrev.split('/');
                     abbrev = array[5];
 
-                    let logo = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/${abbrev}.png`;
+                    let logoURL = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/${abbrev}.png`;
 
                     let team = new Team({
-                        team: `${name}`,
-                        abrv: `${abbrev}`,
-                        logo: `${logo}`
+                        name: `${name}`,
+                        abvr: `${abbrev}`,
+                        logo: `${logoURL}`
                     });
 
                     team.save();
 
-                    teams.push({ team: `${name}`, abbrev: `${abbrev}`, logo: `${logo}` });
+                    //teams.push({ team: `${name}`, abbrev: `${abbrev}`, logo: `${logo}` });
 
 
                 });
 
-                console.log(teams)
+                //console.log(teams)
 
 
 
@@ -64,18 +64,53 @@ const getTeams = async function () {
     })
 }
 
+let getPlayers = function (req, res, next) {
+    request(`https://www.espn.com/nba/team/roster/_/name/${req.params.teamID}`, (error, response, html) => {
+        if (!error && response.statusCode == 200) {
+            const $ = cheerio.load(html);
+            let players = [];
+
+
+
+            $('.Table__TD--headshot .AnchorLink').each((i, el) => {
+                const link = $(el).attr('href');
+
+                //console.log(link);
+                request(`${link}`, async function (error, response, html) {
+                    if (!error && response.statusCode == 200) {
+                        const $$ = cheerio.load(html);
+
+                        const name = $$('.PlayerHeader__Name');
+                        const firstName = name.find('span:first').text();
+                        const lastName = name.find('span').next().text();
+
+                        players.push({ first_name: `${firstName}`, last_name: `${lastName}` });
+
+                        let insert = new playerModel({ first_name: `${firstName}`, last_name: `${lastName}` });
+                        await insert.save();
+                        console.log(insert.first_name);
+                    }
+
+                });
+            })
+            
+        }
+        
+    })
+
+}
+
 async function init() {
     await mongoose.connect(db);
     console.log('MongoDB Connected...');
-    
+
     await Team.deleteMany();
     await getTeams();
-    
+
     const output = await Team.find();
     console.log(output);
-    //console.log(teams)
 }
 
+init();
 
-
-module.exports = init();
+module.exports = init;
