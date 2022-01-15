@@ -9,6 +9,7 @@ const Team = require('./models/teams.js');
 const app = express();
 const router = express.Router();
 const port = 3000;
+app.use(scraper);
 
 //const db = require('./config/keys').mongoURI;
 
@@ -24,7 +25,7 @@ const port = 3000;
 // })
 
 // team1.save()
-app.use(scraper)
+
 
 app.get('/test', function(req, res) {
   Team.find(team1).then(console.log(team1.name))

@@ -98,22 +98,23 @@ async function init() {
     await mongoose.connect(db);
     console.log('MongoDB Connected...');
 
-    await Team.deleteMany();
-    await Player.deleteMany();
-    await getTeams();
+    //await Team.deleteMany();
+    //await Player.deleteMany();
+    //await getTeams();
 
 
 
     const output = await Team.find();
     
-    output.forEach(async(obj) => {
-        await getPlayers(obj.abvr);
-        console.log(obj.abvr)
-    })
+    // output.forEach(obj => {
+    //     getPlayers(obj.abvr);
+    // })
 
-    const output2 = await Player.find();
+    const output2 = await Player.find({ team: "chi"});
 
-    console.log(output2)
+    console.log(output2);
+
+    mongoose.disconnect();
 }
 
 init();
