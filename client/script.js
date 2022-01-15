@@ -16,14 +16,14 @@ async function getTeams() {
     for (let i = 0; i < teamsData.length; i++) {
         
         let card = document.createElement('div');
-        card.textContent = `${teamsData[i].team}`;
+        card.textContent = `${teamsData[i].name}`;
         card.classList.toggle('nba-team');
 
         let image = document.createElement('img');
         image.src = `${teamsData[i].logo}`;
         card.appendChild(image);
 
-        card.addEventListener('click', () => requestTeam(`${teamsData[i].abbrev}`));
+        card.addEventListener('click', () => requestTeam(`${teamsData[i].abvr}`));
 
         container.appendChild(card)
 
