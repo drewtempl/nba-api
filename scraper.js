@@ -2,11 +2,7 @@ const cheerio = require('cheerio');
 const request = require('request');
 const mongoose = require('mongoose');
 const Team = require('./models/teams.js');
-
-const playerSchema = new mongoose.Schema({
-    first_name: String,
-    last_name: String,
-})
+const Player = require('./models/players.js');
 
 const db = require('./config/keys').mongoURI;
 
@@ -21,7 +17,7 @@ const getTeams = async function () {
     return new Promise((resolve, reject) => {
 
         const teams = [];
-        console.log("scraping...")
+        console.log("scraping teams...")
 
         request('https://www.espn.com/nba/teams', function (error, response, html) {
             if (!error && response.statusCode == 200) {
@@ -45,17 +41,11 @@ const getTeams = async function () {
 
                     team.save();
 
-                    //teams.push({ team: `${name}`, abbrev: `${abbrev}`, logo: `${logo}` });
+                    
 
 
                 });
-
-                //console.log(teams)
-
-
-
             }
-
             resolve();
 
         });
@@ -64,38 +54,42 @@ const getTeams = async function () {
     })
 }
 
-let getPlayers = function (req, res, next) {
-    request(`https://www.espn.com/nba/team/roster/_/name/${req.params.teamID}`, (error, response, html) => {
-        if (!error && response.statusCode == 200) {
-            const $ = cheerio.load(html);
-            let players = [];
+let getPlayers = function (teamID) {
+    console.log("scraping players...")
+    return new Promise((resolve, reject) => {
+        request(`https://www.espn.com/nba/team/roster/_/name/${teamID}`, (error, response, html) => {
+            if (!error && response.statusCode == 200) {
+                const $ = cheerio.load(html);
 
+                $('.Table__TD--headshot .AnchorLink').each((i, el) => {
+                    const link = $(el).attr('href');
 
+                    //console.log(link);
+                    request(`${link}`, function (error, response, html) {
+                        if (!error && response.statusCode == 200) {
+                            const $$ = cheerio.load(html);
 
-            $('.Table__TD--headshot .AnchorLink').each((i, el) => {
-                const link = $(el).attr('href');
+                            const name = $$('.PlayerHeader__Name');
+                            const firstName = name.find('span:first').text();
+                            const lastName = name.find('span').next().text();
 
-                //console.log(link);
-                request(`${link}`, async function (error, response, html) {
-                    if (!error && response.statusCode == 200) {
-                        const $$ = cheerio.load(html);
+                            //console.log(firstName, lastName, teamID);
 
-                        const name = $$('.PlayerHeader__Name');
-                        const firstName = name.find('span:first').text();
-                        const lastName = name.find('span').next().text();
+                            let player = new Player({ 
+                                first_name: `${firstName}`,
+                                last_name: `${lastName}`,
+                                team: `${teamID}`
+                             });
+                            player.save();
+                        }
 
-                        players.push({ first_name: `${firstName}`, last_name: `${lastName}` });
+                    });
+                })
 
-                        let insert = new playerModel({ first_name: `${firstName}`, last_name: `${lastName}` });
-                        await insert.save();
-                        console.log(insert.first_name);
-                    }
+            }
 
-                });
-            })
-            
-        }
-        
+        })
+        resolve();
     })
 
 }
@@ -105,10 +99,21 @@ async function init() {
     console.log('MongoDB Connected...');
 
     await Team.deleteMany();
+    await Player.deleteMany();
     await getTeams();
 
+
+
     const output = await Team.find();
-    console.log(output);
+    
+    output.forEach(async(obj) => {
+        await getPlayers(obj.abvr);
+        console.log(obj.abvr)
+    })
+
+    const output2 = await Player.find();
+
+    console.log(output2)
 }
 
 init();
