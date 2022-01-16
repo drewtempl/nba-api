@@ -3,15 +3,7 @@ const request = require('request');
 const mongoose = require('mongoose');
 const Team = require('./models/teams.js');
 const Player = require('./models/players.js');
-
 const db = require('./config/keys').mongoURI;
-
-
-// mongoose
-//   .connect(db)
-//   .then(() => console.log('MongoDB Connected...'))
-//   .catch(err => console.log(err))
-
 
 const getTeams = async function () {
     return new Promise((resolve, reject) => {
@@ -22,7 +14,7 @@ const getTeams = async function () {
         request('https://www.espn.com/nba/teams', function (error, response, html) {
             if (!error && response.statusCode == 200) {
                 const $ = cheerio.load(html);
-                //const teams = [];
+                
 
                 $('.mt4 .ContentList__Item').each((i, el) => {
                     let name = $(el).find('h2').text();
@@ -41,7 +33,7 @@ const getTeams = async function () {
 
                     team.save();
 
-                    
+
 
 
                 });
@@ -55,7 +47,6 @@ const getTeams = async function () {
 }
 
 let getPlayers = function (teamID) {
-    console.log("scraping players...")
     return new Promise((resolve, reject) => {
         request(`https://www.espn.com/nba/team/roster/_/name/${teamID}`, (error, response, html) => {
             if (!error && response.statusCode == 200) {
@@ -64,7 +55,7 @@ let getPlayers = function (teamID) {
                 $('.Table__TD--headshot .AnchorLink').each((i, el) => {
                     const link = $(el).attr('href');
 
-                    //console.log(link);
+                    
                     request(`${link}`, function (error, response, html) {
                         if (!error && response.statusCode == 200) {
                             const $$ = cheerio.load(html);
@@ -75,11 +66,11 @@ let getPlayers = function (teamID) {
 
                             //console.log(firstName, lastName, teamID);
 
-                            let player = new Player({ 
+                            let player = new Player({
                                 first_name: `${firstName}`,
                                 last_name: `${lastName}`,
                                 team: `${teamID}`
-                             });
+                            });
                             player.save();
                         }
 
@@ -95,28 +86,25 @@ let getPlayers = function (teamID) {
 }
 
 async function init() {
-    await mongoose.connect(db);
-    console.log('MongoDB Connected...');
+    return new Promise(async function (resolve, reject) {
+        console.log("Initializaing")
+        await mongoose.connect(db);
+        console.log('MongoDB Connected... (scraper)');
 
-    //await Team.deleteMany();
-    //await Player.deleteMany();
-    //await getTeams();
+        //await Team.deleteMany();
+        await Player.deleteMany();
+        //await getTeams();
+        const teamList = await Team.find();
 
+        teamList.forEach(obj => {
+            getPlayers(obj.abvr);
+        })
 
+        await mongoose.disconnect();
+        console.log('MongoDB disconnected... (scraper)');
 
-    const output = await Team.find();
-    
-    // output.forEach(obj => {
-    //     getPlayers(obj.abvr);
-    // })
-
-    const output2 = await Player.find({ team: "chi"});
-
-    console.log(output2);
-
-    mongoose.disconnect();
+        resolve();
+    })
 }
-
-init();
 
 module.exports = init;
