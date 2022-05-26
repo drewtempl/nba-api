@@ -39,9 +39,11 @@ const getTeams = async function () {
     })
 }
 
-let getPlayers = function (teamID) {
+let getPlayers = function (teamList) {
     return new Promise((resolve, reject) => {
-        request(`https://www.espn.com/nba/team/roster/_/name/${teamID}`, (error, response, html) => {
+        teamList.forEach(obj => {
+        
+        request(`https://www.espn.com/nba/team/roster/_/name/${obj.abvr}`, (error, response, html) => {
             if (!error && response.statusCode == 200) {
                 const $ = cheerio.load(html);
 
@@ -64,7 +66,7 @@ let getPlayers = function (teamID) {
                             let player = new Player({
                                 first_name: `${firstName}`,
                                 last_name: `${lastName}`,
-                                team: `${teamID}`,
+                                team: `${obj.abvr}`,
                                 position: " ",
                                 headshot: `${imgLink}`
                             });
@@ -77,6 +79,7 @@ let getPlayers = function (teamID) {
             }
 
         })
+    })
         resolve();
     })
 
@@ -94,16 +97,15 @@ async function init() {
         const teamList = await Team.find();
         // console.log(teamList)
 
-        teamList.forEach(async obj => {
-            // console.log(`Getting ${obj.abvr} players`)
-            await getPlayers(obj.abvr);
-        })
-
-        await mongoose.disconnect();
-        console.log('MongoDB disconnected... (scraper)');
+        await getPlayers(teamList);
+        
+        // await mongoose.disconnect();
+        // console.log('MongoDB disconnected... (scraper)');
 
         resolve();
     })
+
+    
 }
 
 module.exports = init;
