@@ -32,17 +32,10 @@ const getTeams = async function () {
                     });
 
                     team.save();
-
-
-
-
                 });
             }
             resolve();
-
         });
-
-
     })
 }
 
