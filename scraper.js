@@ -64,7 +64,7 @@ let getPlayers = function (teamID) {
                             const firstName = name.find('span:first').text();
                             const lastName = name.find('span').next().text();
 
-                            //console.log(firstName, lastName, teamID);
+                            // console.log(firstName, lastName, teamID);
 
                             let player = new Player({
                                 first_name: `${firstName}`,
@@ -91,9 +91,9 @@ async function init() {
         await mongoose.connect(db);
         console.log('MongoDB Connected... (scraper)');
 
-        //await Team.deleteMany();
+        // await Team.deleteMany();
         await Player.deleteMany();
-        //await getTeams();
+        // await getTeams();
         const teamList = await Team.find();
 
         teamList.forEach(obj => {

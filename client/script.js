@@ -6,6 +6,7 @@ async function getTeams() {
     
     console.log(response)
     const teamsData = await response.json();
+    console.log(teamsData)
 
     for (let i = 0; i < teamsData.length; i++) {
         
