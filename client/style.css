@@ -29,10 +29,15 @@ h1 {
     background-color: rgb(70, 70, 70);
 }
 
-img {
+.nba-team img {
     height: 120px;
     width: 120px;
     margin-top: 20px;
+}
+
+.nba-player img {
+    height: 90px;
+    width: auto;
 }
 
 

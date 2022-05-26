@@ -5,7 +5,9 @@ const Schema = mongoose.Schema;
 const PlayerSchema = new mongoose.Schema({
     first_name: String,
     last_name: String,
-    team: String
+    team: String,
+    position: String,
+    headshot: String
 })
 
 module.exports = Player = mongoose.model('player', PlayerSchema);

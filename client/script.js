@@ -46,6 +46,11 @@ async function requestTeam(teamAbbrev) {
         
         let card = document.createElement('div');
         card.textContent = `${playersData[i].first_name} ${playersData[i].last_name}`;
+
+        let image = document.createElement('img');
+        image.src = `${playersData[i].headshot}`;
+        card.appendChild(image);
+
         card.classList.toggle('nba-player');
         roster.appendChild(card)
     }

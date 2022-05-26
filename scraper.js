@@ -46,9 +46,11 @@ let getPlayers = function (teamID) {
                 const $ = cheerio.load(html);
 
                 $('.Table__TD--headshot .AnchorLink').each((i, el) => {
-                    const link = $(el).attr('href');
+                    let link = $(el).attr('href');
 
-                    
+                    let imgLink = $(el).find('img').attr('alt');
+                    // console.log(imgLink)
+
                     request(`${link}`, function (error, response, html) {
                         if (!error && response.statusCode == 200) {
                             const $$ = cheerio.load(html);
@@ -62,7 +64,9 @@ let getPlayers = function (teamID) {
                             let player = new Player({
                                 first_name: `${firstName}`,
                                 last_name: `${lastName}`,
-                                team: `${teamID}`
+                                team: `${teamID}`,
+                                position: " ",
+                                headshot: `${imgLink}`
                             });
                             player.save();
                         }
@@ -88,9 +92,11 @@ async function init() {
         await Player.deleteMany();
         // await getTeams();
         const teamList = await Team.find();
+        // console.log(teamList)
 
-        teamList.forEach(obj => {
-            getPlayers(obj.abvr);
+        teamList.forEach(async obj => {
+            // console.log(`Getting ${obj.abvr} players`)
+            await getPlayers(obj.abvr);
         })
 
         await mongoose.disconnect();
