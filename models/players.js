@@ -6,6 +6,7 @@ const PlayerSchema = new mongoose.Schema({
     first_name: String,
     last_name: String,
     team: String,
+    number: Number,
     position: String,
     headshot: String
 })

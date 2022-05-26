@@ -1,111 +1,119 @@
-const cheerio = require('cheerio');
-const request = require('request');
-const mongoose = require('mongoose');
-const Team = require('./models/teams.js');
-const Player = require('./models/players.js');
-const db = require('./config/keys').mongoURI;
+const cheerio = require("cheerio");
+const request = require("request");
+const mongoose = require("mongoose");
+const Team = require("./models/teams.js");
+const Player = require("./models/players.js");
+const db = require("./config/keys").mongoURI;
+const parser = require("./parser");
 
 const getTeams = async function () {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    const teams = [];
+    console.log("scraping teams...");
 
-        const teams = [];
-        console.log("scraping teams...")
+    request("https://www.espn.com/nba/teams", function (error, response, html) {
+      if (!error && response.statusCode == 200) {
+        const $ = cheerio.load(html);
 
-        request('https://www.espn.com/nba/teams', function (error, response, html) {
-            if (!error && response.statusCode == 200) {
-                const $ = cheerio.load(html);
-                
+        $(".mt4 .ContentList__Item").each((i, el) => {
+          let name = $(el).find("h2").text();
+          let abbrev = $(el).find(".AnchorLink:first").attr("href");
 
-                $('.mt4 .ContentList__Item').each((i, el) => {
-                    let name = $(el).find('h2').text();
-                    let abbrev = $(el).find('.AnchorLink:first').attr('href');
+          let array = abbrev.split("/");
+          abbrev = array[5];
 
-                    let array = abbrev.split('/');
-                    abbrev = array[5];
+          let logoURL = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/${abbrev}.png`;
 
-                    let logoURL = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/${abbrev}.png`;
+          let team = new Team({
+            name: `${name}`,
+            abvr: `${abbrev}`,
+            logo: `${logoURL}`,
+          });
 
-                    let team = new Team({
-                        name: `${name}`,
-                        abvr: `${abbrev}`,
-                        logo: `${logoURL}`
-                    });
-
-                    team.save();
-                });
-            }
-            resolve();
+          team.save();
         });
-    })
-}
+      }
+      resolve();
+    });
+  });
+};
 
 let getPlayers = function (teamList) {
-    return new Promise((resolve, reject) => {
-        teamList.forEach(obj => {
-        
-        request(`https://www.espn.com/nba/team/roster/_/name/${obj.abvr}`, (error, response, html) => {
-            if (!error && response.statusCode == 200) {
-                const $ = cheerio.load(html);
+  return new Promise((resolve, reject) => {
+    teamList.forEach((obj) => {
+      request(
+        `https://www.espn.com/nba/team/roster/_/name/${obj.abvr}`,
+        (error, response, html) => {
+          if (!error && response.statusCode == 200) {
+            const $ = cheerio.load(html);
+            const playerIndexes = [];
+            let index = 0;
+            // console.log(obj.abvr)
+            $(".Table__TBODY tr").each((i, el) => {
+              let str = $(el).find("td").text();
 
-                $('.Table__TD--headshot .AnchorLink').each((i, el) => {
-                    let link = $(el).attr('href');
+              const strObj = /\$/.exec(str);
+              let salary = "";
+              if (strObj != null) {
+                salary = str.substring(strObj.index + 1);
+              }
+              console.log(salary)
+            });
 
-                    let imgLink = $(el).find('img').attr('alt');
-                    // console.log(imgLink)
+            $(".Table__TD--headshot .AnchorLink").each((i, el) => {
+              let link = $(el).attr("href");
+              let imgLink = $(el).find("img").attr("alt");
+              // console.log(i)
 
-                    request(`${link}`, function (error, response, html) {
-                        if (!error && response.statusCode == 200) {
-                            const $$ = cheerio.load(html);
+              request(`${link}`, function (error, response, html) {
+                if (!error && response.statusCode == 200) {
+                  const $$ = cheerio.load(html);
 
-                            const name = $$('.PlayerHeader__Name');
-                            const firstName = name.find('span:first').text();
-                            const lastName = name.find('span').next().text();
+                  const name = $$(".PlayerHeader__Name");
+                  const firstName = name.find("span:first").text();
+                  const lastName = name.find("span").next().text();
 
-                            // console.log(firstName, lastName, teamID);
+                  // console.log(firstName, lastName, teamID);
 
-                            let player = new Player({
-                                first_name: `${firstName}`,
-                                last_name: `${lastName}`,
-                                team: `${obj.abvr}`,
-                                position: " ",
-                                headshot: `${imgLink}`
-                            });
-                            player.save();
-                        }
-
-                    });
-                })
-
-            }
-
-        })
-    })
-        resolve();
-    })
-
-}
+                  let player = new Player({
+                    first_name: `${firstName}`,
+                    last_name: `${lastName}`,
+                    team: `${obj.abvr}`,
+                    number: 0,
+                    position: " ",
+                    headshot: `${imgLink}`,
+                  });
+                  player.save();
+                }
+              });
+            });
+          }
+        }
+      );
+    });
+    resolve();
+  });
+};
 
 async function init() {
-    return new Promise(async function (resolve, reject) {
-        console.log("Initializaing")
-        await mongoose.connect(db);
-        console.log('MongoDB Connected... (scraper)');
+  return new Promise(async function (resolve, reject) {
+    console.log("Initializaing");
+    await mongoose.connect(db);
+    console.log("MongoDB Connected... (scraper)");
 
-        // await Team.deleteMany();
-        await Player.deleteMany();
-        // await getTeams();
-        const teamList = await Team.find();
-        // console.log(teamList)
+    // await Team.deleteMany();
+    await Player.deleteMany();
+    // await getTeams();
+    const teamList = await Team.find();
+    // console.log(teamList)
 
-        await getPlayers(teamList);
-        
-        // await mongoose.disconnect();
-        // console.log('MongoDB disconnected... (scraper)');
+    await getPlayers(teamList);
 
-        resolve();
-    })
+    // await mongoose.disconnect();
+    // console.log('MongoDB disconnected... (scraper)');
 
-    
+    resolve();
+  });
 }
 
 module.exports = init;
