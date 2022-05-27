@@ -26,7 +26,6 @@ let getPlayers = function (teamList) {
             $(".Table__TD--headshot .AnchorLink").each((i, el) => {
               let link = $(el).attr("href");
               let imgLink = $(el).find("img").attr("alt");
-              // console.log(i)
 
               request(`${link}`, function (error, response, html) {
                 if (!error && response.statusCode == 200) {
@@ -35,9 +34,20 @@ let getPlayers = function (teamList) {
                   const name = $$(".PlayerHeader__Name");
                   let firstName = name.find("span:first").text();
                   let lastName = name.find("span").next().text();
-                  const playerObj = playerSalaries.find(element => {
-                    return (element.firstName === firstName && element.lastName === lastName)
-                  })
+
+                  const playerStats = [];
+                  $$(".PlayerHeader__Right .StatBlock__Content .StatBlockInner__Value").each(function(i, elem){
+                    let str = $$(elem).text();
+                    playerStats.push(str);
+                  });
+
+                  const playerObj = playerSalaries.find((element) => {
+                    return (
+                      element.firstName === firstName &&
+                      element.lastName === lastName
+                    );
+                  });
+
                   let sal = "";
                   let num = "";
                   let pos = "";
@@ -58,6 +68,12 @@ let getPlayers = function (teamList) {
                     college: col,
                     salary: sal,
                     headshot: imgLink,
+                    stats: {
+                      pts: playerStats[0],
+                      reb: playerStats[1],
+                      ast: playerStats[2],
+                      per: playerStats[3]
+                    }
                   });
 
                   player.save();

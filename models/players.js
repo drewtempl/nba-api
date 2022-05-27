@@ -10,7 +10,13 @@ const PlayerSchema = new mongoose.Schema({
     position: String,
     college: String,
     salary: String,
-    headshot: String
+    headshot: String,
+    stats: {
+        pts: Number,
+        reb: Number,
+        ast: Number,
+        per: Number
+    }
 })
 
 module.exports = Player = mongoose.model('player', PlayerSchema);
