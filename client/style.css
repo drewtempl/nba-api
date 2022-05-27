@@ -40,4 +40,8 @@ h1 {
     width: auto;
 }
 
+.nba-player {
+    display: flex;
+}
+
 

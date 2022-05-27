@@ -41,10 +41,19 @@ async function requestTeam(teamAbbrev) {
         playerName.textContent = `${playersData[i].first_name} ${playersData[i].last_name}`;
 
         const number = document.createElement('div');
-        number.textContent = `${playersData[i].number}`;
+        number.textContent = `#${playersData[i].number}`;
 
         const position = document.createElement('div');
         position.textContent = `${playersData[i].position}`;
+
+        const points = document.createElement('div');
+        points.textContent = `${playersData[i].stats.pts}`;
+        const rebounds = document.createElement('div');
+        rebounds.textContent = `${playersData[i].stats.reb}`;
+        const assists = document.createElement('div');
+        assists.textContent = `${playersData[i].stats.ast}`;
+        const per = document.createElement('div');
+        per.textContent = `${playersData[i].stats.per}`;
 
         const image = document.createElement('img');
         image.src = `${playersData[i].headshot}`;
@@ -53,17 +62,21 @@ async function requestTeam(teamAbbrev) {
         college.textContent = `${playersData[i].college}`;
 
         const salary = document.createElement('div');
-        salary.textContent = `${playersData[i].salary}`;
+        salary.textContent = `$${playersData[i].salary}`;
 
         card.appendChild(image);
         card.appendChild(playerName);
         card.appendChild(number);
+        card.appendChild(points);
+        card.appendChild(rebounds);
+        card.appendChild(assists);
+        card.appendChild(per);
         card.appendChild(position);
         card.appendChild(college);
         card.appendChild(salary);
 
         card.classList.toggle('nba-player');
-        roster.appendChild(card)
+        roster.appendChild(card);
     }
 
     header.textContent = `${playersData[0].team}`.toUpperCase();
