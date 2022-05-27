@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const scraper = require('./scraper.js');
+const scraper = require('./data-fetch/scraper.js');
 const mongoose = require('mongoose');
 const Team = require('./models/teams.js');
 const Player = require('./models/players.js');

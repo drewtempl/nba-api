@@ -1,42 +1,11 @@
 const cheerio = require("cheerio");
 const request = require("request");
 const mongoose = require("mongoose");
-const Team = require("./models/teams.js");
-const Player = require("./models/players.js");
-const db = require("./config/keys").mongoURI;
+const Team = require("../models/teams.js");
+const Player = require("../models/players.js");
+const db = require("../config/keys").mongoURI;
 const parser = require("./parser");
-
-const getTeams = async function () {
-  return new Promise((resolve, reject) => {
-    const teams = [];
-    console.log("scraping teams...");
-
-    request("https://www.espn.com/nba/teams", function (error, response, html) {
-      if (!error && response.statusCode == 200) {
-        const $ = cheerio.load(html);
-
-        $(".mt4 .ContentList__Item").each((i, el) => {
-          let name = $(el).find("h2").text();
-          let abbrev = $(el).find(".AnchorLink:first").attr("href");
-
-          let array = abbrev.split("/");
-          abbrev = array[5];
-
-          let logoURL = `https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/${abbrev}.png`;
-
-          let team = new Team({
-            name: `${name}`,
-            abvr: `${abbrev}`,
-            logo: `${logoURL}`,
-          });
-
-          team.save();
-        });
-      }
-      resolve();
-    });
-  });
-};
+const getTeams = require("./getTeams");
 
 let getPlayers = function (teamList) {
   return new Promise((resolve, reject) => {
@@ -47,8 +16,7 @@ let getPlayers = function (teamList) {
           if (!error && response.statusCode == 200) {
             const $ = cheerio.load(html);
             const playerSalaries = [];
-            let index = 0;
-            // console.log(obj.abvr)
+
             $(".Table__TBODY tr").each((i, el) => {
               let str = $(el).find("td").text();
               const playerObj = parser(str);
@@ -73,10 +41,12 @@ let getPlayers = function (teamList) {
                   let sal = "";
                   let num = "";
                   let pos = "";
+                  let col = "";
                   if (playerObj != undefined) {
                     sal = playerObj.salary;
                     num = playerObj.number;
                     pos = playerObj.position;
+                    col = playerObj.college;
                   }
 
                   const player = new Player({
@@ -85,6 +55,7 @@ let getPlayers = function (teamList) {
                     team: obj.abvr,
                     number: num,
                     position: pos,
+                    college: col,
                     salary: sal,
                     headshot: imgLink,
                   });

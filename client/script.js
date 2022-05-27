@@ -49,6 +49,9 @@ async function requestTeam(teamAbbrev) {
         const image = document.createElement('img');
         image.src = `${playersData[i].headshot}`;
 
+        const college = document.createElement('div');
+        college.textContent = `${playersData[i].college}`;
+
         const salary = document.createElement('div');
         salary.textContent = `${playersData[i].salary}`;
 
@@ -56,6 +59,7 @@ async function requestTeam(teamAbbrev) {
         card.appendChild(playerName);
         card.appendChild(number);
         card.appendChild(position);
+        card.appendChild(college);
         card.appendChild(salary);
 
         card.classList.toggle('nba-player');
