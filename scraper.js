@@ -46,18 +46,13 @@ let getPlayers = function (teamList) {
         (error, response, html) => {
           if (!error && response.statusCode == 200) {
             const $ = cheerio.load(html);
-            const playerIndexes = [];
+            const playerSalaries = [];
             let index = 0;
             // console.log(obj.abvr)
             $(".Table__TBODY tr").each((i, el) => {
               let str = $(el).find("td").text();
-
-              const strObj = /\$/.exec(str);
-              let salary = "";
-              if (strObj != null) {
-                salary = str.substring(strObj.index + 1);
-              }
-              console.log(salary)
+              const playerObj = parser(str);
+              playerSalaries.push(playerObj);
             });
 
             $(".Table__TD--headshot .AnchorLink").each((i, el) => {
@@ -70,19 +65,26 @@ let getPlayers = function (teamList) {
                   const $$ = cheerio.load(html);
 
                   const name = $$(".PlayerHeader__Name");
-                  const firstName = name.find("span:first").text();
-                  const lastName = name.find("span").next().text();
+                  let firstName = name.find("span:first").text();
+                  let lastName = name.find("span").next().text();
+                  const salaryObj = playerSalaries.find(element => {
+                    return (element.firstName === firstName && element.lastName === lastName)
+                  })
+                  let salary = "";
+                  if (salaryObj != undefined) {
+                    salary = salaryObj.salary;
+                  }
 
-                  // console.log(firstName, lastName, teamID);
-
-                  let player = new Player({
+                  const player = new Player({
                     first_name: `${firstName}`,
                     last_name: `${lastName}`,
                     team: `${obj.abvr}`,
                     number: 0,
                     position: " ",
+                    salary: `${salary}`,
                     headshot: `${imgLink}`,
                   });
+
                   player.save();
                 }
               });
@@ -97,7 +99,6 @@ let getPlayers = function (teamList) {
 
 async function init() {
   return new Promise(async function (resolve, reject) {
-    console.log("Initializaing");
     await mongoose.connect(db);
     console.log("MongoDB Connected... (scraper)");
 

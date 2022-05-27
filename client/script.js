@@ -44,12 +44,20 @@ async function requestTeam(teamAbbrev) {
 
     for (let i = 0; i < playersData.length; i++) {
         
-        let card = document.createElement('div');
-        card.textContent = `${playersData[i].first_name} ${playersData[i].last_name}`;
+        const card = document.createElement('div');
+        const playerName = document.createElement('div');
+        playerName.textContent = `${playersData[i].first_name} ${playersData[i].last_name}`;
 
-        let image = document.createElement('img');
+        const image = document.createElement('img');
         image.src = `${playersData[i].headshot}`;
+
+        const salary = document.createElement('div');
+        salary.textContent = `${playersData[i].salary}`;
+
         card.appendChild(image);
+        card.appendChild(playerName);
+        card.appendChild(salary);
+
 
         card.classList.toggle('nba-player');
         roster.appendChild(card)
