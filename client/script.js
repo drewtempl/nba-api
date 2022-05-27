@@ -19,16 +19,9 @@ async function getTeams() {
         card.appendChild(image);
 
         card.addEventListener('click', () => requestTeam(`${teamsData[i].abvr}`));
-
-        container.appendChild(card)
-
+        container.appendChild(card);
     }
-
-    
-    
-
 }
-
 
 async function requestTeam(teamAbbrev) {
     
@@ -43,10 +36,15 @@ async function requestTeam(teamAbbrev) {
     const roster = document.querySelector('.roster');
 
     for (let i = 0; i < playersData.length; i++) {
-        
         const card = document.createElement('div');
         const playerName = document.createElement('div');
         playerName.textContent = `${playersData[i].first_name} ${playersData[i].last_name}`;
+
+        const number = document.createElement('div');
+        number.textContent = `${playersData[i].number}`;
+
+        const position = document.createElement('div');
+        position.textContent = `${playersData[i].position}`;
 
         const image = document.createElement('img');
         image.src = `${playersData[i].headshot}`;
@@ -56,8 +54,9 @@ async function requestTeam(teamAbbrev) {
 
         card.appendChild(image);
         card.appendChild(playerName);
+        card.appendChild(number);
+        card.appendChild(position);
         card.appendChild(salary);
-
 
         card.classList.toggle('nba-player');
         roster.appendChild(card)

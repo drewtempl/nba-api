@@ -20,34 +20,36 @@ function parser(str) {
     noName = str.substring(lastObj.index);
   }
 
-  const number = /[0-9]+|[0-9]+[0-9]/.exec(str)
-//   console.log(number)
+  const numObj = /[0-9]+|[0-9]+[0-9]/.exec(str);
+  let number = "";
+  if (numObj != null) {
+      number = numObj[0];
+  }
 
-  const position = /PG|SG|SF|PF|C/.exec(noName)
-  console.log(position);
+  const posObj = /PG|SG|SF|PF|C/.exec(noName);
+  let position = "";
+  if (posObj != null) {
+      position = posObj[0];
+  }
 
-  let noPos = str.substring()
-
-    return {
-        firstName: firstName,
-        lastName: lastName,
-        number: number[0],
-        position: position[0],
-        salary: salary,
-    }
-
+  return {
+    firstName: firstName,
+    lastName: lastName,
+    number: number,
+    position: position,
+    salary: salary,
+  };
 }
 
 function arrTest(str) {
-    arr = [];
-    arr.push(parser(str));
-    console.log(arr[0]);
-    const obj = arr.find(element => element.firstName == "Russell")
-    console.log(obj)
+  arr = [];
+  arr.push(parser(str));
+  console.log(arr[0]);
+  const obj = arr.find((element) => element.firstName == "Russell");
+  console.log(obj);
 }
 
-parser("Russell Westbrook20PG33UCLA$44,211,146")
+// console.log(parser("Russell Westbrook0PG336UCLA$44,211,146"));
 // arrTest("Russell Westbrook20PG33UCLA$44,211,146")
-
 
 module.exports = parser;

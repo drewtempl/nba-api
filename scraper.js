@@ -67,22 +67,26 @@ let getPlayers = function (teamList) {
                   const name = $$(".PlayerHeader__Name");
                   let firstName = name.find("span:first").text();
                   let lastName = name.find("span").next().text();
-                  const salaryObj = playerSalaries.find(element => {
+                  const playerObj = playerSalaries.find(element => {
                     return (element.firstName === firstName && element.lastName === lastName)
                   })
-                  let salary = "";
-                  if (salaryObj != undefined) {
-                    salary = salaryObj.salary;
+                  let sal = "";
+                  let num = "";
+                  let pos = "";
+                  if (playerObj != undefined) {
+                    sal = playerObj.salary;
+                    num = playerObj.number;
+                    pos = playerObj.position;
                   }
 
                   const player = new Player({
-                    first_name: `${firstName}`,
-                    last_name: `${lastName}`,
-                    team: `${obj.abvr}`,
-                    number: 0,
-                    position: " ",
-                    salary: `${salary}`,
-                    headshot: `${imgLink}`,
+                    first_name: firstName,
+                    last_name: lastName,
+                    team: obj.abvr,
+                    number: num,
+                    position: pos,
+                    salary: sal,
+                    headshot: imgLink,
                   });
 
                   player.save();
