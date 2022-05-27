@@ -14,14 +14,26 @@ function parser(str) {
 
   const lastObj = /\d/.exec(str);
   let lastName = "";
+  let noName = "";
   if (lastObj != null) {
     lastName = str.substring(firstObj.index + 1, lastObj.index);
+    noName = str.substring(lastObj.index);
   }
+
+  const number = /[0-9]+|[0-9]+[0-9]/.exec(str)
+//   console.log(number)
+
+  const position = /PG|SG|SF|PF|C/.exec(noName)
+  console.log(position);
+
+  let noPos = str.substring()
 
     return {
         firstName: firstName,
         lastName: lastName,
-        salary: salary
+        number: number[0],
+        position: position[0],
+        salary: salary,
     }
 
 }
@@ -34,8 +46,8 @@ function arrTest(str) {
     console.log(obj)
 }
 
-// parser("Russell Westbrook0PG33UCLA$44,211,146")
-// arrTest("Russell Westbrook0PG33UCLA$44,211,146")
+parser("Russell Westbrook20PG33UCLA$44,211,146")
+// arrTest("Russell Westbrook20PG33UCLA$44,211,146")
 
 
 module.exports = parser;
