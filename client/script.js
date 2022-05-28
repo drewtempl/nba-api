@@ -46,6 +46,15 @@ async function requestTeam(teamAbbrev) {
         const position = document.createElement('div');
         position.textContent = `${playersData[i].position}`;
 
+        const age = document.createElement('div');
+        age.textContent = `${playersData[i].age}`;
+
+        const height = document.createElement('div');
+        height.textContent = `${playersData[i].height}`;
+
+        const weight = document.createElement('div');
+        weight.textContent = `${playersData[i].weight}`;
+
         const points = document.createElement('div');
         points.textContent = `${playersData[i].stats.pts}`;
         const rebounds = document.createElement('div');
@@ -67,11 +76,14 @@ async function requestTeam(teamAbbrev) {
         card.appendChild(image);
         card.appendChild(playerName);
         card.appendChild(number);
+        card.appendChild(position);
         card.appendChild(points);
         card.appendChild(rebounds);
         card.appendChild(assists);
         card.appendChild(per);
-        card.appendChild(position);
+        card.appendChild(age);
+        card.appendChild(height);
+        card.appendChild(weight);
         card.appendChild(college);
         card.appendChild(salary);
 

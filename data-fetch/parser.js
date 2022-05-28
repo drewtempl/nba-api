@@ -30,4 +30,4 @@ function arrTest(str) {
 // parser("Russell Westbrook0PG336'lbsUCLA$44,211,146");
 // arrTest("Russell Westbrook20PG33lbsUCLA$44,211,146")
 
-module.exports = parser2;
+module.exports = parser;

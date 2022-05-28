@@ -15,7 +15,6 @@ let getPlayers = function (teamList) {
         (error, response, html) => {
           if (!error && response.statusCode == 200) {
             const $ = cheerio.load(html);
-            const playerSalaries = [];
             const playerInfoArr = [];
 
             $(".Table__TBODY tr").each((i, el) => {
@@ -36,10 +35,6 @@ let getPlayers = function (teamList) {
               });
               playerInfoArr.push(playerInfo);
             });
-
-            console.log(playerInfoArr)
-
-
 
             $(".Table__TD--headshot .AnchorLink").each((i, el) => {
               let link = $(el).attr("href");
