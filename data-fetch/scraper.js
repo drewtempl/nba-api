@@ -16,12 +16,30 @@ let getPlayers = function (teamList) {
           if (!error && response.statusCode == 200) {
             const $ = cheerio.load(html);
             const playerSalaries = [];
+            const playerInfoArr = [];
 
             $(".Table__TBODY tr").each((i, el) => {
-              let str = $(el).find("td").text();
-              const playerObj = parser(str);
-              playerSalaries.push(playerObj);
+              const playerInfo = [];
+              $(el).find("td").each(function(i, elem){
+                let str = $(elem).text();
+                if (i == 1) {
+                  const parsed = parser(str);
+                  playerInfo.push(parsed[0]);
+                  playerInfo.push(parsed[1]);
+                  playerInfo.push(parsed[2]);
+
+                }
+                else if (i > 1) {
+                  playerInfo.push(str);
+                }
+                
+              });
+              playerInfoArr.push(playerInfo);
             });
+
+            console.log(playerInfoArr)
+
+
 
             $(".Table__TD--headshot .AnchorLink").each((i, el) => {
               let link = $(el).attr("href");
@@ -41,32 +59,24 @@ let getPlayers = function (teamList) {
                     playerStats.push(str);
                   });
 
-                  const playerObj = playerSalaries.find((element) => {
+                  const playerObj = playerInfoArr.find((element) => {
                     return (
-                      element.firstName === firstName &&
-                      element.lastName === lastName
+                      element[0] === firstName && 
+                      element[1] === lastName
                     );
                   });
-
-                  let sal = "";
-                  let num = "";
-                  let pos = "";
-                  let col = "";
-                  if (playerObj != undefined) {
-                    sal = playerObj.salary;
-                    num = playerObj.number;
-                    pos = playerObj.position;
-                    col = playerObj.college;
-                  }
 
                   const player = new Player({
                     first_name: firstName,
                     last_name: lastName,
                     team: obj.abvr,
-                    number: num,
-                    position: pos,
-                    college: col,
-                    salary: sal,
+                    number: playerObj[2],
+                    position: playerObj[3],
+                    age: playerObj[4],
+                    height: playerObj[5],
+                    weight: playerObj[6],
+                    college: playerObj[7],
+                    salary: playerObj[8],
                     headshot: imgLink,
                     stats: {
                       pts: playerStats[0],
