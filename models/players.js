@@ -8,7 +8,7 @@ const PlayerSchema = new mongoose.Schema({
     team: String,
     number: Number,
     position: String,
-    age: Number,
+    age: Number | String,
     height: String,
     weight: String,
     college: String,

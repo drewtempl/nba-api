@@ -2,14 +2,14 @@ const container = document.querySelector('.container');
 const header = document.querySelector('h1');
 
 async function getTeams() {
-    const response = await fetch('http://localhost:3000/api/teams', {mode: 'cors'});
-    
+    const response = await fetch('http://localhost:3000/api/teams', { mode: 'cors' });
+
     console.log(response)
     const teamsData = await response.json();
     console.log(teamsData)
 
     for (let i = 0; i < teamsData.length; i++) {
-        
+
         let card = document.createElement('div');
         card.textContent = `${teamsData[i].name}`;
         card.classList.toggle('nba-team');
@@ -24,9 +24,9 @@ async function getTeams() {
 }
 
 async function requestTeam(teamAbbrev) {
-    
-    const response = await fetch(`http://localhost:3000/api/teams/${teamAbbrev}`, {mode: 'cors'});
-    
+
+    const response = await fetch(`http://localhost:3000/api/teams/${teamAbbrev}`, { mode: 'cors' });
+
     console.log(response)
     const playersData = await response.json();
     console.log(playersData)
@@ -55,14 +55,22 @@ async function requestTeam(teamAbbrev) {
         const weight = document.createElement('div');
         weight.textContent = `${playersData[i].weight}`;
 
-        const points = document.createElement('div');
-        points.textContent = `${playersData[i].stats.pts}`;
-        const rebounds = document.createElement('div');
-        rebounds.textContent = `${playersData[i].stats.reb}`;
-        const assists = document.createElement('div');
-        assists.textContent = `${playersData[i].stats.ast}`;
-        const per = document.createElement('div');
-        per.textContent = `${playersData[i].stats.per}`;
+        const statistics = document.createElement('div'); 
+        if (playersData[i].stats) {
+            const points = document.createElement('div');
+            points.textContent = `${playersData[i].stats.pts}`;
+            const rebounds = document.createElement('div');
+            rebounds.textContent = `${playersData[i].stats.reb}`;
+            const assists = document.createElement('div');
+            assists.textContent = `${playersData[i].stats.ast}`;
+            const per = document.createElement('div');
+            per.textContent = `${playersData[i].stats.per}`;
+            statistics.appendChild(points);
+            statistics.appendChild(rebounds);
+            statistics.appendChild(assists);
+            statistics.appendChild(per);
+        }
+
 
         const image = document.createElement('img');
         image.src = `${playersData[i].headshot}`;
@@ -77,10 +85,7 @@ async function requestTeam(teamAbbrev) {
         card.appendChild(playerName);
         card.appendChild(number);
         card.appendChild(position);
-        card.appendChild(points);
-        card.appendChild(rebounds);
-        card.appendChild(assists);
-        card.appendChild(per);
+        card.appendChild(statistics);
         card.appendChild(age);
         card.appendChild(height);
         card.appendChild(weight);

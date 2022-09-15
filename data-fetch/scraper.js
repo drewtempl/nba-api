@@ -80,6 +80,7 @@ let getPlayers = function (teamList) {
                       per: playerStats[3]
                     }
                   });
+                  console.log(player);
 
                   player.save();
                 }
@@ -106,8 +107,8 @@ async function init() {
 
     await getPlayers(teamList);
 
-    // await mongoose.disconnect();
-    // console.log('MongoDB disconnected... (scraper)');
+    await mongoose.disconnect();
+    console.log('MongoDB disconnected... (scraper)');
 
     resolve();
   });

@@ -6,8 +6,6 @@ const Team = require('./models/teams.js');
 const Player = require('./models/players.js');
 const db = require('./config/keys').mongoURI;
 
-
-
 const app = express();
 const router = express.Router();
 const port = 3000;
@@ -23,8 +21,6 @@ async function startup () {
   // await scraper();
   await mongoose.connect(db);
   console.log('MongoDB Connected... (app)');
-  const teamList = await Team.find();
-  console.log(teamList);
 }
 
 startup();
@@ -32,7 +28,6 @@ startup();
 //Get request for list of teams
 app.get('/api/teams', async function (req, res) {
   const teamList = await Team.find();
-  console.log(teamList);
   res.json(teamList);
 })
 
