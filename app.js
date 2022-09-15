@@ -12,7 +12,7 @@ const app = express();
 const router = express.Router();
 const port = 3000;
 
-let allowCrossDomain = function (req, res, next) {
+const allowCrossDomain = function (req, res, next) {
   res.header('Access-Control-Allow-Origin', "*");
   res.header('Access-Control-Allow-Headers', "*");
   next();
@@ -20,12 +20,11 @@ let allowCrossDomain = function (req, res, next) {
 app.use(allowCrossDomain);
 
 async function startup () {
-  await scraper();
-
+  // await scraper();
   await mongoose.connect(db);
   console.log('MongoDB Connected... (app)');
-
   const teamList = await Team.find();
+  console.log(teamList);
 }
 
 startup();
@@ -33,6 +32,7 @@ startup();
 //Get request for list of teams
 app.get('/api/teams', async function (req, res) {
   const teamList = await Team.find();
+  console.log(teamList);
   res.json(teamList);
 })
 
